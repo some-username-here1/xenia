@@ -293,7 +293,8 @@ struct TextureInfo;
 struct TextureExtent {
   uint32_t pitch;          // texel pitch
   uint32_t height;         // texel height
-  uint32_t block_height;   // # of vertical blocks
+  uint32_t block_width;    // # of horizontal visible blocks
+  uint32_t block_height;   // # of vertical visible blocks
   uint32_t block_pitch_h;  // # of horizontal pitch blocks
   uint32_t block_pitch_v;  // # of vertical pitch blocks
   uint32_t depth;
@@ -326,7 +327,9 @@ struct TextureInfo {
   uint32_t height;  // height in pixels
   uint32_t depth;   // depth in layers
   uint32_t pitch;   // pitch in blocks
-  uint32_t mip_levels;
+  uint32_t mip_min_level;
+  uint32_t mip_max_level;
+  bool is_stacked;
   bool is_tiled;
   bool has_packed_mips;
 
@@ -340,6 +343,8 @@ struct TextureInfo {
   bool is_compressed() const {
     return format_info()->type == FormatType::kCompressed;
   }
+
+  uint32_t mip_levels() const { return 1 + (mip_max_level - mip_min_level); }
 
   static bool Prepare(const xenos::xe_gpu_texture_fetch_t& fetch,
                       TextureInfo* out_info);

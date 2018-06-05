@@ -27,10 +27,11 @@ static TextureExtent CalculateExtent(const FormatInfo* format_info,
 
   extent.pitch = pitch;
   extent.height = height;
-  extent.block_pitch_h = xe::round_up(extent.pitch, format_info->block_width) /
-                         format_info->block_width;
+  extent.block_width = xe::round_up(extent.pitch, format_info->block_width) /
+                       format_info->block_width;
   extent.block_height = xe::round_up(extent.height, format_info->block_height) /
                         format_info->block_height;
+  extent.block_pitch_h = extent.block_width;
   extent.block_pitch_v = extent.block_height;
   extent.depth = depth;
 
@@ -55,6 +56,9 @@ static TextureExtent CalculateExtent(const FormatInfo* format_info,
 
     // Is depth special?
     extent.depth = extent.depth;
+  } else {
+    extent.pitch = extent.block_pitch_h * format_info->block_width;
+    extent.height = extent.block_pitch_v * format_info->block_height;
   }
 
   return extent;
